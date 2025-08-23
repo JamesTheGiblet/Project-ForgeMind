@@ -1,201 +1,141 @@
-🌀 Project Name
+# 🌀 ForgeMind: Autonomous LLM Builder
 
-"ForgeMind" — Autonomous LLM Builder
+**Tagline**: An AI that builds, trains, and tests its own successors.
 
-Tagline: An AI that iteratively designs, trains, and tests its own successors.
+-----
 
-1. Core Concept
+### **1. Core Concept**
 
-ForgeMind is an autonomous AI training ecosystem that uses existing LLMs to:
+ForgeMind is an AI training system that uses existing LLMs to:
 
+  * Figure out what a human wants to build.
+  * Make and clean up its own training data.
+  * Fine-tune a target model.
+  * Check its work against a benchmark.
+  * Adjust its strategy and try again—all while keeping track of every step.
 
-Interpret high-level human goals.
+-----
 
-Generate and curate synthetic training datasets.
+### **2. System Pillars**
 
-Fine-tune a target model or module.
+  * **The Brain**: This is the decision-maker, controlling the whole loop.
+  * **The Foundry**: Where we build all the synthetic and real datasets.
+  * **The Forge**: Our environment for training models (LoRA/QLoRA).
+  * **The Trial Grounds**: Where we run all the evaluations and benchmarks.
+  * **The Lorekeeper**: Keeps track of versions, metadata, and where everything came from.
+  * **The Warden**: Our controls for safety, policy, and human review.
 
-Evaluate results against a benchmark.
+-----
 
-Self-adjust its strategy and repeat — all while versioning every artifact.
+### **3. The System Flow**
 
-2. System Pillars
+**Step 1 — Define the Goal**
 
-Orchestration Brain – decision-making & loop control.
+A human or another system sets:
 
-Knowledge Foundry – synthetic + real dataset builder.
+  * **Task**: "Code review assistant for Python security best practices."
+  * **Success**: "At least 90% pass rate on our security test suite."
+  * **Limits**: "Use LLaMA-3-8B base, 4-bit LoRA, max $50 GPU budget per try."
 
-Model Forge – LoRA/QLoRA training environment.
+**Step 2 — Make & Clean Data**
 
-Trial Grounds – evaluation & benchmarking.
+  * Multiple LLM APIs generate labeled examples.
+  * We use other models to filter out bad data.
+  * A safety module rejects anything that violates our rules.
 
-Lorekeeper – versioning, metadata, provenance tracking.
+**Step 3 — Train the Model**
 
-Warden – safety, policy, and human review controls.
+  * Runs a fine-tuning job.
+  * Saves the checkpoint and a training manifest.
 
-3. New System Flow
+**Step 4 — Evaluate**
 
-Step 1 — Goal Definition
+  * Runs on three test tiers:
+      * **Canary tests**: Fast, to catch early failures.
+      * **Full benchmark**: For deep accuracy checks.
+      * **Adversarial challenges**: To stress-test how it handles unexpected situations.
 
+**Step 5 — Decide & Iterate**
 
-Human or external system sets:
+  * If the goal is met → promote the model to a "stable" registry.
+  * If not → the brain adjusts its prompt strategies, dataset sizes, or training settings.
 
-Task: "Code review assistant for Python security best practices"
+-----
 
-Success metric: "≥90% pass rate on security test suite"
+### **4. Deployment Model**
 
-Constraints: "Use LLaMA-3-8B base, 4-bit LoRA, max $50 GPU budget/iteration"
+  * **Local mode**: Runs on a single powerful workstation with a GPU (e.g., RTX 4090).
+  * **Cluster mode**: Uses a queue-based orchestrator (like Ray or Prefect) across cloud GPUs.
+  * **Hybrid mode**: Data generation happens via LLM APIs, with training and evaluation running locally.
 
-Step 2 — Data Generation & Curation
+-----
 
+### **5. Tech Stack**
 
-Multiple LLM APIs generate labeled examples.
+  * **Core language**: Python 3.11+
+  * **ML stack**: Hugging Face Transformers + PEFT + bitsandbytes
+  * **Orchestration**: Prefect / custom async task loop
+  * **Data handling**: Pandas, DVC (for dataset versioning)
+  * **Registry**: MLflow / Weights & Biases
+  * **Safety layer**: OpenAI moderation API, Detoxify, custom regex/AST checkers
+  * **Interface**:
+      * CLI for scripting automation
+      * Optional lightweight web dashboard for tracking progress
 
-Cross-model validation filters out low-quality data.
+-----
 
-Safety module rejects policy-violating content.
+### **6. Example Directory Layout**
 
-Step 3 — Model Training
-
-
-Runs fine-tuning job (LoRA/QLoRA).
-
-Saves checkpoint + training manifest.
-
-Step 4 — Evaluation
-
-
-Runs on three test tiers:
-
-Canary tests (fast, early fail detection).
-
-Full benchmark suite (domain accuracy).
-
-Adversarial challenges (stress-test generalization).
-
-Step 5 — Decision & Iteration
-
-
-If target met → promote to “stable” registry.
-
-If not → orchestrator adjusts prompt strategies, dataset sizes, or hyperparams.
-
-4. Deployment Model
-
-Local mode – runs on a single beefy workstation with GPU (e.g., RTX 4090).
-
-Cluster mode – uses a queue-based orchestrator (e.g., Ray or Prefect) across cloud GPUs.
-
-Hybrid mode – generation done via LLM APIs, training local, eval mixed.
-
-5. Tech Stack
-
-Core language: Python 3.11+
-
-ML stack: Hugging Face Transformers + PEFT + bitsandbytes
-
-Orchestration: Prefect / custom async task loop
-
-Data handling: Pandas, DVC (dataset versioning)
-
-Registry: MLflow / Weights & Biases
-
-Safety layer: OpenAI moderation API, Detoxify, custom regex/AST checkers
-
-Interface:
-
-CLI for scripting automation
-
-Optional lightweight web dashboard for iteration tracking
-
-6. Example Directory Layout
-
+```
 ForgeMind/
-
 │
-
 ├── orchestrator/
-
-│ ├── loop.py # Core iteration logic
-
-│ ├── planner.py # Decides generation & training strategies
-
-│ └── policy.py # Rules & thresholds
-
+│ ├── loop.py         # Core iteration logic
+│ ├── planner.py      # Decides generation & training strategies
+│ └── policy.py       # Rules & thresholds
 │
-
 ├── generator/
-
-│ ├── prompts/ # Prompt templates for LLM generation
-
-│ ├── dataset_builder.py # API calls + validation
-
-│ └── filters.py # Quality & safety filters
-
+│ ├── prompts/        # Prompt templates for LLM generation
+│ ├── dataset_builder.py  # API calls + validation
+│ └── filters.py      # Quality & safety filters
 │
-
 ├── trainer/
-
-│ ├── fine_tune.py # LoRA/QLoRA training script
-
-│ ├── config.yaml # Training configs
-
-│ └── model_utils.py # Save/load helpers
-
+│ ├── fine_tune.py    # LoRA/QLoRA training script
+│ ├── config.yaml     # Training configs
+│ └── model_utils.py  # Save/load helpers
 │
-
 ├── evaluator/
-
-│ ├── benchmarks/ # Static benchmark sets
-
-│ ├── run_eval.py # Runs tests, metrics
-
+│ ├── benchmarks/     # Static benchmark sets
+│ ├── run_eval.py     # Runs tests, metrics
 │ └── adversarial_gen.py # Stress test cases
-
 │
-
 ├── registry/
-
 │ ├── save_artifact.py # Saves datasets/models/results
-
 │ └── query_registry.py # Lookup historical runs
-
 │
-
 ├── warden/
-
 │ ├── safety_checks.py
-
 │ └── human_review.py
-
 │
-
 └── README.md
+```
 
-7. MVP Milestones
+-----
 
-Phase 1 — Prototype Loop
+### **7. MVP Milestones**
 
+  * **Phase 1 — Prototype Loop**: Build a single task loop: generate → fine-tune → evaluate → adjust.
+      * **Goal**: Run 3 iterations with a clear improvement trend.
+  * **Phase 2 — Safety & Versioning**: Add filters, a dataset/model registry, and a basic dashboard.
+  * **Phase 3 — Multi-Agent Generation**: Use multiple LLMs for dataset creation and adversarial cases.
+  * **Phase 4 — Parallel Experimentation**: The brain tests multiple dataset/hyperparameter configurations in parallel and picks the winner.
 
-Implement a single task loop: generate → fine-tune → evaluate → adjust.
+-----
 
-Target: run 3 iterations with clear improvement trend.
+### **8. Why This is a New System**
 
-Phase 2 — Safety & Versioning
+This isn't just a new feature—it's a complete, self-improving AI engineering system.
 
+-----
 
-Add filters, dataset/model registry, basic dashboard.
-
-Phase 3 — Multi-Agent Generation
-
-
-Use multiple LLMs for dataset creation and adversarial cases.
-
-Phase 4 — Parallel Experimentation
-
-
-Orchestrator tests multiple dataset/hyperparam configs in parallel, picks winner.
-
-8. Why This is a New System
-
-Not just a feature — it’s a closed-loop AI engineering ecosystem. 
+How does this revised blueprint for ForgeMind feel? Does it capture the raw, honest, and process-driven spirit of **The Giblet's Workshop**?
